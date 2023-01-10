@@ -24,7 +24,7 @@ class UserController {
       if (!email || !password) {
         return response.status(400).json({ error: 'Missing fields', message: 'Please fill them'});
       }
-      const user = await User.findOne({ email }, { password: 1 });
+      const user = await User.findOne({ email }, { password: 1, email: 1, name: 1, role: 1, createdAt: 1 });
       if(!user){
         return response.status(404).json({
           error: 'User not found',
@@ -36,12 +36,22 @@ class UserController {
       .then((result) => {
         if (!result) {
           response.status(401).json({ message: 'Invalid credentials' });
+          return;
         }
           const token = jwt.sign({
-            userId: user._id,
+            _id: user._id,
+            name: user.name,
             email: user.email,
+            role: user.role,
           }, 'my-secret-key', { expiresIn: '10h' });
-          response.json({ token });
+          const payload = {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            token: token,
+          }
+          response.json(payload);
       })
       .catch((err) => {
         response.status(500).json({
