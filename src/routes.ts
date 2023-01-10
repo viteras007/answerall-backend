@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import UserController from './Controller/UserController';
+import UserController from './controller/UserController';
 import usersRouter from './routes/UserRoutes';
 import questionRoutes from './routes/QuestionRoutes';
 import examRoutes from './routes/ExamRoutes';
