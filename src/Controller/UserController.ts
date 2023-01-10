@@ -21,6 +21,9 @@ class UserController {
   async login(request: Request, response: Response) {
     const { email, password } = request.body;
     try {
+      if (!email || !password) {
+        return response.status(400).json({ error: 'Missing fields', message: 'Please fill them'});
+      }
       const user = await User.findOne({ email }, { password: 1 });
       if(!user){
         return response.status(404).json({
@@ -58,6 +61,10 @@ class UserController {
   async create(request: Request, response: Response) {
     const { name, email, password, role } = request.body;
     try {
+      if (!name || !email || !password || !role) {
+        return response.status(400).json({ error: 'Missing fields', message: 'Please fill them'});
+      }
+
       const userExists = await User.findOne({ email: email});
 
       if (userExists){

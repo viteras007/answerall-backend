@@ -31,6 +31,10 @@ class QuestionController {
     const { title, text, alternatives, level, content, correctAnswer } =
       request.body;
     try {
+      if (!title || !text || !alternatives || !level || !content || !correctAnswer) {
+        return response.status(400).json({ error: 'Missing fields', message: 'Please fill them'});
+      }
+
       const question = await Question.create({
         title,
         text,
@@ -53,6 +57,9 @@ class QuestionController {
     const { title, text, alternatives, level, content, correctAnswer } =
       request.body;
     try {
+      if (!title || !text || !alternatives || !level || !content || !correctAnswer) {
+        return response.status(400).json({ error: 'Missing fields', message: 'Please fill them'});
+      }
       const question = await Question.findById(id);
       if (!question) {
         return response.status(404).json({

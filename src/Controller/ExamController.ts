@@ -32,6 +32,9 @@ class ExamController {
     const { userId } = request.decoded;
     const { title, questions } = request.body;
     try {
+      if (!title || !questions) {
+        return response.status(400).json({ error: 'Missing fields', message: 'Please fill them'});
+      }
       const exam = await Exam.create({
         title,
         owner: userId,
@@ -46,54 +49,56 @@ class ExamController {
     }
   }
 
-  // async update(request: any, response: Response) {
-  //   const { id } = request.params;
-  //   const { title, text, alternatives, level, content, correctAnswer } =
-  //     request.body;
-  //   try {
-  //     const question = await Question.findById(id);
-  //     if (!question) {
-  //       return response.status(404).json({
-  //         error: "Question not found",
-  //       });
-  //     }
+  async update(request: any, response: Response) {
+    const { id } = request.params;
+    const { title, questions } = request.body;
+    try {
+      if (!title || !questions) {
+        return response.status(400).json({ error: 'Missing fields', message: 'Please fill them'});
+      }
+      const exam = await Exam.findById(id);
+      if (!exam) {
+        return response.status(404).json({
+          error: "Exam not found",
+        });
+      }
 
-  //     const updatedQuestion = await Question.findOneAndUpdate(
-  //       { _id: id },
-  //       { $set: { title, text, alternatives, level, content, correctAnswer } },
-  //       { new: true }
-  //     );
+      const updatedExam = await Exam.findOneAndUpdate(
+        { _id: id },
+        { $set: { title, questions } },
+        { new: true }
+      );
 
-  //     return response.json(updatedQuestion);
-  //   } catch (error) {
-  //     return response.status(500).json({
-  //       error: "Something went wrong, please try again",
-  //       message: error,
-  //     });
-  //   }
-  // }
+      return response.json(updatedExam);
+    } catch (error) {
+      return response.status(500).json({
+        error: "Something went wrong, please try again",
+        message: error,
+      });
+    }
+  }
 
-  // async delete(request: any, response: Response) {
-  //   const { id } = request.params;
+  async delete(request: any, response: Response) {
+    const { id } = request.params;
 
-  //   try {
-  //     const question = await Question.findById(id);
-  //     if (!question) {
-  //       return response.status(404).json({
-  //         error: "Question not found",
-  //       });
-  //     }
+    try {
+      const exam = await Exam.findById(id);
+      if (!exam) {
+        return response.status(404).json({
+          error: "Exam not found",
+        });
+      }
 
-  //     const deletedQuestion = await Question.deleteOne({ _id: id });
+      const deletedExam = await Exam.deleteOne({ _id: id });
 
-  //     return response.json(deletedQuestion);
-  //   } catch (error) {
-  //     return response.status(500).json({
-  //       error: "Something went wrong, please try again",
-  //       message: error,
-  //     });
-  //   }
-  // }
+      return response.json(deletedExam);
+    } catch (error) {
+      return response.status(500).json({
+        error: "Something went wrong, please try again",
+        message: error,
+      });
+    }
+  }
 }
 
 export default new ExamController();
