@@ -5,8 +5,15 @@ class ExamController {
   async find(request: any, response: Response) {
     const { userId } = request.decoded;
     try {
-      const exams = await Exam.find({ owner: userId }).populate(['questions']);
-      return response.json(exams);
+      const page = request.query.page || 1;
+      const limit = request.query.limit || 10;
+      const skip = (page - 1) * limit;
+      const exams = await Exam.find({ owner: userId }).populate(['questions']).skip(skip).limit(limit);
+      const totalDocs = await Exam.countDocuments();
+      return response.json({
+        docs: exams,
+        totalDocs
+      });
     } catch (error) {
       return response.status(500).json({
         error: "Something went wrong, please try again",

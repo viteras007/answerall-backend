@@ -4,8 +4,15 @@ import Question from "../database/schemas/Question";
 class QuestionController {
   async find(request: any, response: Response) {
     try {
-      const questions = await Question.find();
-      return response.json(questions);
+      const page = request.query.page || 1;
+      const limit = request.query.limit || 10;
+      const skip = (page - 1) * limit;
+      const questions = await Question.find().skip(skip).limit(limit);
+      const totalDocs = await Question.countDocuments();
+      return response.json({
+        docs: questions,
+        totalDocs
+      });
     } catch (error) {
       return response.status(500).json({
         error: "Something went wrong, please try again",

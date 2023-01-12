@@ -7,9 +7,16 @@ class UserController {
 
   async find(request: any, response: Response) {
     try {
-      const { decoded } = request;
-      const users = await User.find();
-      return response.json(users);
+      const page = request.query.page || 1;
+      const limit = request.query.limit || 10;
+      const skip = (page - 1) * limit;
+
+      const users = await User.find().skip(skip).limit(limit);
+      const totalDocs = await User.countDocuments();
+      return response.json({
+        docs: users,
+        totalDocs
+      });
     } catch (error) {
       return response.status(500).json({
         error: 'Something went wrong, please try again',
